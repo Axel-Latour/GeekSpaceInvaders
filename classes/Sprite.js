@@ -1,34 +1,33 @@
 class Sprite {
   constructor(imageFile, left, top) {
     this.imageFile = imageFile;
+    this.generateDomElement();
     this.left = left;
     this.top = top;
-    this.generateDomElement();
   }
 
   generateDomElement() {
-    this.node = document.createElement("img");
-    this.node.src = this.imageFile;
-    this.node.style.position = "absolute";
-    this.node.style.left = this.left;
-    this.node.style.top = this.top;
+    this._node = document.createElement("img");
+    this._node.src = `assets/${this.imageFile}.png`;
+    this._node.style.position = "absolute";
+    document.body.appendChild(this._node);
   }
 
   get left() {
-    return this.left;
+    return this._left;
   }
 
   set left(value) {
-    this.left = value;
-    this.node.style.left = this.left;
+    this._left = value;
+    this._node.style.left = `${value}px`;
   }
 
   get top() {
-    return this.top;
+    return this._top;
   }
 
   set top(value) {
-    this.top = value;
-    this.node.style.top = this.top;
+    this._top = value;
+    this._node.style.top = `${value}px`;
   }
 }

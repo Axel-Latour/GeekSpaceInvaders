@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <title> GeekSpaceInvaders !</title>
     <link rel="stylesheet" href="style.css">
+    <script src="constants.js"></script>
     <script src="classes/Sprite.js"></script>
     <script src="classes/Ship.js"></script>
     <script src="classes/Alien.js"></script>
@@ -13,6 +14,15 @@
 
 <body onload="initFirstScreen()">
     <div id="start-message">PRESS ENTER TO START THE GAME</div>
+    <div id="game-container">
+        <div id="game-header">
+            <p>Score : 0</p>
+        </div>
+        <div id="game-area"></div>
+        <div id="game-footer">
+            <p>Vies : 3</p>
+        </div>
+    </div>
 </body>
 
 </html>

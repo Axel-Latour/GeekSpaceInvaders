@@ -33,7 +33,7 @@ class Sprite {
     this._node = document.createElement("img");
     this._node.src = this.generateFullImagePath(this.imageFile);
     this._node.style.position = "absolute";
-    document.body.appendChild(this._node);
+    document.getElementById(GAME_AREA_ID).appendChild(this._node);
   }
 
   /**

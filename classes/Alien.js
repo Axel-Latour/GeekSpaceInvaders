@@ -1,6 +1,6 @@
 class Alien extends Sprite {
   static PIXEL_BY_ALIEN_MOVE = 2;
-  static MOVE_INTERVAL = 1;
+  static MOVE_INTERVAL = 200;
   static SPACE_BETWEEN_ALIEN = 50;
 
   constructor(imageFile, left, top) {

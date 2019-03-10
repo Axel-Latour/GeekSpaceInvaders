@@ -1,15 +1,20 @@
 //Global reference to the player ship
+var isGameInitialzed = false;
 var ship;
 var aliens;
 
 const LINES_OF_ALIEN = 3;
 const ALIENS_PER_LINE = 5;
 
+function initFirstScreen() {
+  document.addEventListener("keydown", onKeyDown);
+}
+
 /**
  * Initialize the game by placing all the Sprites
  */
 function initGame() {
-  document.addEventListener("keydown", onKeyDown);
+  document.getElementById("start-message").style.display = "none";
   generateShip();
   generateAliens();
 }
@@ -84,7 +89,19 @@ function oppositeAnimation(animateToRight) {
  * @param {*} e keyboard event
  */
 function onKeyDown(e) {
+  console.log(e.keyCode);
   switch (e.keyCode) {
+    //Enter key
+    case 13:
+      if (!isGameInitialzed) {
+        isGameInitialzed = true;
+        initGame();
+      }
+      break;
+    //Space bar
+    case 32:
+      aliens[0][0]._node.src = "assets/alien_1_2.png";
+      break;
     //Left arrow
     case 37:
       ship.moveLeft();
@@ -92,10 +109,6 @@ function onKeyDown(e) {
     //Right arrow
     case 39:
       ship.moveRight();
-      break;
-    //Space bar
-    case 32:
-      aliens[0][0]._node.src = "assets/alien_1_2.png";
       break;
     default:
       break;

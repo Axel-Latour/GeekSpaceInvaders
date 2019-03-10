@@ -7,5 +7,19 @@ body {
 }
 
 body {
+  font-family: spaceInvadersFont;
+  color: white;
   background-color: black;
+}
+
+#start-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+@font-face {
+  font-family: spaceInvadersFont;
+  src: url(fonts/space_invaders.ttf);
 }

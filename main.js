@@ -2,6 +2,7 @@
 var isGameInitialzed = false;
 var ship;
 var aliens;
+var missile;
 
 function initFirstScreen() {
   document.addEventListener("keydown", onKeyDown);
@@ -12,6 +13,7 @@ function initFirstScreen() {
  */
 function initGame() {
   document.getElementById(START_CONTAINER_ID).style.display = "none";
+  document.getElementById(GAME_CONTAINER_ID).style.display = "flex";
   generateShip();
   generateAliens();
 }
@@ -35,16 +37,16 @@ function generateShip() {
 function generateAliens() {
   aliens = [];
   let currentAlien;
-  for (var i = 0; i < LINES_OF_ALIEN; i++) {
+  for (var i = 0; i < ALIENS_IMAGE_ORDER.length; i++) {
     aliens[i] = [];
     for (var j = 0; j < ALIENS_PER_LINE; j++) {
       currentAlien = new Alien(
-        `alien_${i + 1}`,
+        `alien_${ALIENS_IMAGE_ORDER[i]}`,
         j * Alien.SPACE_BETWEEN_ALIEN,
         i * Alien.SPACE_BETWEEN_ALIEN
       );
       aliens[i][j] = currentAlien;
-      animateSprite(currentAlien, true);
+      // animateSprite(currentAlien, true);
     }
   }
 }
@@ -60,10 +62,10 @@ function generateAliens() {
 function animateSprite(sprite, animateToRight) {
   sprite.startAnimation(Alien.MOVE_INTERVAL, () => {
     if (animateToRight && !sprite.moveRight()) {
-      oppositeAnimation(animateToRight);
+      reverseAnimation(animateToRight);
     }
     if (!animateToRight && !sprite.moveLeft()) {
-      oppositeAnimation(animateToRight);
+      reverseAnimation(animateToRight);
     }
   });
 }
@@ -73,12 +75,35 @@ function animateSprite(sprite, animateToRight) {
  * in the opposite direction of the current animation
  * @param {*} animateToRight true if the animation is currently moving to the right
  */
-function oppositeAnimation(animateToRight) {
-  for (var i = 0; i < LINES_OF_ALIEN; i++) {
+function reverseAnimation(animateToRight) {
+  for (var i = 0; i < ALIENS_IMAGE_ORDER.length; i++) {
     for (var j = 0; j < ALIENS_PER_LINE; j++) {
       aliens[i][j].top += Alien.SPACE_BETWEEN_ALIEN;
       animateSprite(aliens[i][j], !animateToRight);
     }
+  }
+}
+
+/**
+ * If no missile has already been generated, generate it hided.
+ * Placce it just on the top of the ship and animate it to go until
+ * the top of screen. Once the missile is out of the screen, hide it.
+ * We can display only one missile at a time.
+ */
+function launchMissile() {
+  if (!missile) {
+    missile = new Missile("ship_missile", 0, 0);
+    missile._node.style.display = "none";
+  }
+  if (missile._node.style.display === "none") {
+    missile._node.style.display = "block";
+    missile.top = ship.top - Sprite.SPRITE_SIZE;
+    missile.left = ship.left + Sprite.SPRITE_SIZE / 2 - SHIP_MISSILE_WIDTH / 2;
+    missile.startAnimation(Missile.MOVE_INTERVAL, () => {
+      if (!missile.moveTop()) {
+        missile._node.style.display = "none";
+      }
+    });
   }
 }
 
@@ -99,6 +124,7 @@ function onKeyDown(e) {
       break;
     //Space bar
     case 32:
+      launchMissile();
       break;
     //Left arrow
     case 37:

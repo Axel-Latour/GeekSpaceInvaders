@@ -22,7 +22,7 @@ body {
 #game-container {
   height: 100%;
   width: 100%;
-  display: flex;
+  display: none;
   flex-direction: column;
 }
 
@@ -30,6 +30,11 @@ body {
   height: 100%;
   width: 100%;
   position: relative;
+}
+
+#game-header {
+  z-index: 1;
+  background-color: black;
 }
 
 @font-face {

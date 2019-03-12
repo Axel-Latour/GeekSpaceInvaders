@@ -1,5 +1,5 @@
 class Ship extends Sprite {
-  static PIXEL_BY_SHIP_MOVE = 10;
+  static PIXEL_BY_SHIP_MOVE = 5;
 
   constructor(imageFile, left, top) {
     super(imageFile, left, top);

@@ -46,7 +46,7 @@ function generateAliens() {
         i * Alien.SPACE_BETWEEN_ALIEN
       );
       aliens[i][j] = currentAlien;
-      // animateSprite(currentAlien, true);
+      animateSprite(currentAlien, true);
     }
   }
 }
@@ -102,8 +102,28 @@ function launchMissile() {
     missile.startAnimation(Missile.MOVE_INTERVAL, () => {
       if (!missile.moveTop()) {
         missile._node.style.display = "none";
+      } else {
+        checkIfAlienIsTouched();
       }
     });
+  }
+}
+
+/**
+ * Loop over all the displayed aliens to check if they're colliding
+ * with the ship missile
+ */
+function checkIfAlienIsTouched() {
+  for (var i = 0; i < ALIENS_IMAGE_ORDER.length; i++) {
+    for (var j = 0; j < ALIENS_PER_LINE; j++) {
+      if (aliens[i][j]._node.style.display !== "none") {
+        if (missile.checkCollision(aliens[i][j])) {
+          aliens[i][j]._node.style.display = "none";
+          missile._node.style.display = "none";
+          missile.stopAnimation();
+        }
+      }
+    }
   }
 }
 

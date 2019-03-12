@@ -93,4 +93,15 @@ class Sprite {
       clearInterval(this._timer);
     }
   }
+
+  checkCollision(other) {
+    if (
+      this.left + this._node.width > other.left &&
+      this.left < other.left + Sprite.SPRITE_SIZE &&
+      this.top > other.top &&
+      this.top < other.top + Sprite.SPRITE_SIZE
+    ) {
+      return true;
+    }
+  }
 }

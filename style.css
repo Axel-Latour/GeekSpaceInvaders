@@ -12,7 +12,7 @@ body {
   background-color: black;
 }
 
-#start-message {
+.aligned-message {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -35,6 +35,11 @@ body {
 #game-header {
   z-index: 1;
   background-color: black;
+}
+
+#victory-message,
+#defeat-message {
+  display: none;
 }
 
 @font-face {

@@ -94,6 +94,12 @@ class Sprite {
     }
   }
 
+  /**
+   * Check if the current Sprite is in collision with the given Sprite.
+   * It uses the top and left properties to define if the Sprites are in collision.
+   * @param {*} other Sprite to check for collision
+   * @returns true if there's a collision
+   */
   checkCollision(other) {
     if (
       this.left + this._node.width > other.left &&

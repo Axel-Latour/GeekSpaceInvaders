@@ -43,4 +43,18 @@ class Alien extends Sprite {
       this._node.src = this.generateFullImagePath(`${this.initialImageFile}_1`);
     }
   }
+
+  /**
+   * Simulate the alien explosion.
+   * Stop its move animation, change its image to an exploded alien,
+   * and after an interval of time, hide it from the game area
+   */
+  explode() {
+    this.stopAnimation();
+    this._node.src = this.generateFullImagePath(EXPLODED_ALIEN_IMG);
+    setTimeout(
+      () => (this._node.style.display = "none"),
+      Alien.MOVE_INTERVAL * 3
+    );
+  }
 }

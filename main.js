@@ -1,7 +1,15 @@
-//Global reference to the player ship
+//TODO
+// Gérer les tirs ennemis et le nombre de vies restantes
+
 var isGameInitialzed = false;
+
 var totalNumberOfAliens = ALIENS_IMAGE_ORDER.length * ALIENS_PER_LINE;
 var numberOfAliensKilled = 0;
+
+var backgroundSound = new Audio("assets/sounds/background-sound.mp3");
+var missileSound = new Audio("assets/sounds/shoot.wav");
+var alienKilledSound = new Audio("assets/sounds/alien-killed.wav");
+
 var ship;
 var aliens;
 var missile;
@@ -14,6 +22,8 @@ function initFirstScreen() {
  * Initialize the game by placing all the Sprites
  */
 function initGame() {
+  backgroundSound.loop = true;
+  backgroundSound.play();
   document.getElementById(START_CONTAINER_ID).style.display = "none";
   document.getElementById(GAME_CONTAINER_ID).style.display = "flex";
   updateScoreValue();
@@ -64,11 +74,13 @@ function generateAliens() {
  */
 function animateSprite(sprite, animateToRight) {
   sprite.startAnimation(Alien.MOVE_INTERVAL, () => {
-    if (animateToRight && !sprite.moveRight()) {
-      reverseAnimation(animateToRight);
-    }
-    if (!animateToRight && !sprite.moveLeft()) {
-      reverseAnimation(animateToRight);
+    if (sprite._node.style.display !== "none") {
+      if (animateToRight && !sprite.moveRight()) {
+        reverseAnimation(animateToRight);
+      }
+      if (!animateToRight && !sprite.moveLeft()) {
+        reverseAnimation(animateToRight);
+      }
     }
   });
 }
@@ -102,6 +114,7 @@ function launchMissile() {
     missile._node.style.display = "none";
   }
   if (missile._node.style.display === "none") {
+    missileSound.play();
     missile._node.style.display = "block";
     missile.top = ship.top - Sprite.SPRITE_SIZE;
     missile.left = ship.left + Sprite.SPRITE_SIZE / 2 - SHIP_MISSILE_WIDTH / 2;
@@ -117,15 +130,16 @@ function launchMissile() {
 
 /**
  * Loop over all the displayed aliens to check if they're colliding
- * with the ship missile
+ * with the ship missile. If it is, hide the alien, the missile, update
+ * the player score and check if the player won
  */
 function checkIfAlienIsTouched() {
   aliens.forEach(lineOfAliens =>
     lineOfAliens.forEach(alien => {
       if (alien._node.style.display !== "none") {
         if (missile.checkCollision(alien)) {
-          alien._node.style.display = "none";
-          alien.stopAnimation();
+          alienKilledSound.play();
+          alien.explode();
           missile._node.style.display = "none";
           missile.stopAnimation();
           numberOfAliensKilled++;
@@ -181,6 +195,7 @@ function stopTheGameWithDefeat() {
  * When the game is over, hide the game container and stop all the alien animations
  */
 function stopTheGame() {
+  backgroundSound.stop();
   document.getElementById(GAME_CONTAINER_ID).style.display = "none";
   stopAliensAnimation();
 }
@@ -201,27 +216,28 @@ function stopAliensAnimation() {
  * @param {*} e keyboard event
  */
 function onKeyDown(e) {
-  switch (e.keyCode) {
+  if (isGameInitialzed) {
+    switch (e.keyCode) {
+      //Space bar
+      case 32:
+        launchMissile();
+        break;
+      //Left arrow
+      case 37:
+        ship.moveLeft();
+        break;
+      //Right arrow
+      case 39:
+        ship.moveRight();
+        break;
+      default:
+        break;
+    }
+  } else if (e.keyCode === 13) {
     //Enter key
-    case 13:
-      if (!isGameInitialzed) {
-        isGameInitialzed = true;
-        initGame();
-      }
-      break;
-    //Space bar
-    case 32:
-      launchMissile();
-      break;
-    //Left arrow
-    case 37:
-      ship.moveLeft();
-      break;
-    //Right arrow
-    case 39:
-      ship.moveRight();
-      break;
-    default:
-      break;
+    if (!isGameInitialzed) {
+      isGameInitialzed = true;
+      initGame();
+    }
   }
 }

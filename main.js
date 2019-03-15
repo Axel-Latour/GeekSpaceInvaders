@@ -9,6 +9,8 @@ var numberOfAliensKilled = 0;
 var backgroundSound = new Audio("assets/sounds/background-sound.mp3");
 var missileSound = new Audio("assets/sounds/shoot.wav");
 var alienKilledSound = new Audio("assets/sounds/alien-killed.wav");
+var victorySound = new Audio();
+var defeatSound = new Audio();
 
 var ship;
 var aliens;
@@ -74,7 +76,7 @@ function generateAliens() {
  */
 function animateSprite(sprite, animateToRight) {
   sprite.startAnimation(Alien.MOVE_INTERVAL, () => {
-    if (sprite._node.style.display !== "none") {
+    if (sprite.isDisplayed()) {
       if (animateToRight && !sprite.moveRight()) {
         reverseAnimation(animateToRight);
       }
@@ -93,7 +95,7 @@ function animateSprite(sprite, animateToRight) {
 function reverseAnimation(animateToRight) {
   aliens.forEach(lineOfAliens =>
     lineOfAliens.forEach(alien => {
-      if (alien._node.style.display !== "none") {
+      if (alien.isDisplayed()) {
         alien.top += Alien.SPACE_BETWEEN_ALIEN;
         animateSprite(alien, !animateToRight);
         checkIfAlienIsOnTheShip(alien);
@@ -113,7 +115,7 @@ function launchMissile() {
     missile = new Missile("ship_missile", 0, 0);
     missile._node.style.display = "none";
   }
-  if (missile._node.style.display === "none") {
+  if (!missile.isDisplayed()) {
     missileSound.play();
     missile._node.style.display = "block";
     missile.top = ship.top - Sprite.SPRITE_SIZE;
@@ -136,7 +138,7 @@ function launchMissile() {
 function checkIfAlienIsTouched() {
   aliens.forEach(lineOfAliens =>
     lineOfAliens.forEach(alien => {
-      if (alien._node.style.display !== "none") {
+      if (alien.isDisplayed()) {
         if (missile.checkCollision(alien)) {
           alienKilledSound.play();
           alien.explode();
@@ -180,6 +182,7 @@ function checkForVictory() {
   if (numberOfAliensKilled === totalNumberOfAliens) {
     document.getElementById(VICTORY_CONTAINER_ID).style.display = "flex";
     stopTheGame();
+    victorySound.play();
   }
 }
 
@@ -189,13 +192,14 @@ function checkForVictory() {
 function stopTheGameWithDefeat() {
   document.getElementById(DEFEAT_CONTAINER_ID).style.display = "flex";
   stopTheGame();
+  defeatSound.play();
 }
 
 /**
  * When the game is over, hide the game container and stop all the alien animations
  */
 function stopTheGame() {
-  backgroundSound.stop();
+  backgroundSound.pause();
   document.getElementById(GAME_CONTAINER_ID).style.display = "none";
   stopAliensAnimation();
 }

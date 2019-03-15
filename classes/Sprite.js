@@ -27,6 +27,13 @@ class Sprite {
   }
 
   /**
+   * Check if a Sprite is displayed on the screen
+   */
+  isDisplayed() {
+    return this._node.style.display !== "none";
+  }
+
+  /**
    * Generate the Sprite as an img HTML tag and add it to the body
    */
   generateDomElement() {

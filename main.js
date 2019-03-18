@@ -69,10 +69,10 @@ function generateAliens() {
         i * Alien.SPACE_BETWEEN_ALIEN
       );
       aliens[i][j] = currentAlien;
-      animateAlien(currentAlien, true);
+      // animateAlien(currentAlien, true);
     }
   }
-  // launchAlienMissile(aliens[0][6]);
+  launchAlienMissile(aliens[0][6]);
 }
 
 /**
@@ -122,13 +122,12 @@ function reverseAnimation(animateToRight) {
 function launchMissile() {
   if (!missile) {
     missile = new Missile(MISSILE_IMG, 0, 0);
-    missile._node.style.display = "none";
   }
   if (!missile.isDisplayed()) {
     missileSound.play();
     missile._node.style.display = "block";
     missile.top = ship.top - Sprite.SPRITE_SIZE;
-    missile.left = ship.left + Sprite.SPRITE_SIZE / 2 - SHIP_MISSILE_WIDTH / 2;
+    missile.left = ship.left + Sprite.SPRITE_SIZE / 2 - MISSILE_WIDTH / 2;
     missile.startAnimation(Missile.MOVE_INTERVAL, () => {
       if (!missile.moveTop()) {
         missile._node.style.display = "none";
@@ -140,27 +139,14 @@ function launchMissile() {
 }
 
 function launchAlienMissile(alien) {
-  if (!alien.missile) {
-    alien.missile = new Missile(MISSILE_IMG, 0, 0);
-    alien.missile._node.style.display = "none";
-  }
-  if (!alien.missile.isDisplayed()) {
-    alien.missile._node.style.display = "block";
-    alien.missile.top = alien.top + Sprite.SPRITE_SIZE;
-    alien.missile.left =
-      alien.left + Sprite.SPRITE_SIZE / 2 - SHIP_MISSILE_WIDTH / 2;
-    alien.missile.startAnimation(Missile.MOVE_INTERVAL, () => {
-      if (!alien) {
-        alien.missile.stopAnimation();
-      } else {
-        if (!alien.missile.moveDown()) {
-          alien.missile._node.style.display = "none";
-        } else {
-          checkIfShipIsTouched(alien);
-        }
-      }
-    });
-  }
+  alien.launchMissile();
+  alien.missile.startAnimation(Missile.MOVE_INTERVAL, () => {
+    if (!alien.missile.moveDown()) {
+      alien.missile.destroy();
+    } else {
+      checkIfShipIsTouched(alien);
+    }
+  });
 }
 
 /**
@@ -171,27 +157,30 @@ function launchAlienMissile(alien) {
 function checkIfAlienIsTouched() {
   aliens.forEach((lineOfAliens, currentLineIdx) =>
     lineOfAliens.forEach((alien, currentAlienIdx) => {
-      if (alien) {
-        if (missile.checkCollision(alien)) {
-          alienKilledSound.play();
-          alien.explode();
-          aliens[currentLineIdx][currentAlienIdx] = null;
-          missile._node.style.display = "none";
-          missile.stopAnimation();
-          numberOfAliensKilled++;
-          updateScoreValue();
-          checkForVictory();
-        }
+      if (alien && missile.checkCollision(alien)) {
+        alienKilledSound.play();
+        alien.explode();
+        aliens[currentLineIdx][currentAlienIdx] = null;
+        missile._node.style.display = "none";
+        missile.stopAnimation();
+        numberOfAliensKilled++;
+        updateScoreValue();
+        checkForVictory();
       }
     })
   );
 }
 
+/**
+ * Check if a given alien has launched a missile that
+ * touched our ship. If it is, the ship is destroyed and the user
+ * looses one life.
+ * @param {*} alien: alien that shoots the missile
+ */
 function checkIfShipIsTouched(alien) {
   if (alien.missile.checkCollision(ship)) {
     shipKilled.play();
-    alien.missile._node.style.display = "none";
-    alien.missile.stopAnimation();
+    alien.missile.destroy();
     ship.explode();
     stopAliensAnimation();
   }

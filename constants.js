@@ -10,6 +10,6 @@ const MISSILE_IMG = "missile";
 
 const ALIENS_PER_LINE = 11;
 const ALIENS_IMAGE_ORDER = ["1", "2", "2", "3", "3"];
-const SHIP_MISSILE_WIDTH = 7;
+const MISSILE_WIDTH = 7;
 
 const VICTORY_CODE = 1234;

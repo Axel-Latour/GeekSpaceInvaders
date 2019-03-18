@@ -26,6 +26,21 @@ class Sprite {
     this._node.style.top = `${value}px`;
   }
 
+  getWidth() {
+    return this._node.clientWidth;
+  }
+
+  getHeight() {
+    return this._node.clientHeight;
+  }
+
+  /**
+   * Check if a Sprite is displayed on the screen
+   */
+  isDisplayed() {
+    return this._node.style.display !== "none";
+  }
+
   /**
    * Generate the Sprite as an img HTML tag and add it to the body
    */

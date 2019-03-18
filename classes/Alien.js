@@ -53,6 +53,18 @@ class Alien extends Sprite {
   }
 
   /**
+   * Generate an instance of missile associated to this alien.
+   * It places the missile just in the middle, in front of the alien
+   */
+  launchMissile() {
+    const missile = new Missile(MISSILE_IMG, 0, 0);
+    missile._node.style.display = "block";
+    missile.top = this.top + Sprite.SPRITE_SIZE;
+    missile.left = this.left + Sprite.SPRITE_SIZE / 2 - MISSILE_WIDTH / 2;
+    this.missile = missile;
+  }
+
+  /**
    * Simulate the alien explosion.
    * Stop its move animation, change its image to an exploded alien,
    * and after an interval of time, hide it from the game area

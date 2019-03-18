@@ -4,6 +4,7 @@ class Missile extends Sprite {
 
   constructor(imageFile, left, top) {
     super(imageFile, left, top);
+    this._node.style.display = "none";
   }
 
   /**
@@ -28,5 +29,13 @@ class Missile extends Sprite {
       return true;
     }
     return false;
+  }
+
+  /**
+   * Remove the current missile from the DOM and stop its animation
+   */
+  destroy() {
+    this.stopAnimation();
+    this._node.remove();
   }
 }

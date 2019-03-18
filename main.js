@@ -1,8 +1,5 @@
 //TODO:
 // Factoriser la génération des missiles et rajouter l'aléatoire
-// Changer l'image lorsque le vaisseau est touché, avec effet de restart
-// Compteur de vies
-// Gestion des collisions entre les missiles ?
 
 var isGameInitialzed = false;
 
@@ -133,7 +130,7 @@ function launchMissile() {
     missile.left = ship.left + Sprite.SPRITE_SIZE / 2 - MISSILE_WIDTH / 2;
     missile.startAnimation(Missile.MOVE_INTERVAL, () => {
       if (!missile.moveTop()) {
-        missile._node.style.display = "none";
+        missile.hideMissile();
       } else {
         checkIfAlienIsTouched();
       }
@@ -147,6 +144,7 @@ function launchAlienMissile(alien) {
     if (!alien.missile.moveDown()) {
       alien.missile.destroy();
     } else {
+      checkForMissileCollision(alien);
       checkIfShipIsTouched(alien);
     }
   });
@@ -164,8 +162,7 @@ function checkIfAlienIsTouched() {
         alienKilledSound.play();
         alien.explode();
         aliens[currentLineIdx][currentAlienIdx] = null;
-        missile._node.style.display = "none";
-        missile.stopAnimation();
+        missile.hideMissile();
         numberOfAliensKilled++;
         updateScoreValue();
         checkForVictory();
@@ -190,6 +187,18 @@ function checkIfShipIsTouched(alien) {
     setTimeout(() => {
       explodeShip();
     }, 1000);
+  }
+}
+
+/**
+ * Check if the ship missile and the given alien missile
+ * are in collision. If it is, destroy the two missiles.
+ * @param {*} alien alien shooting the missile
+ */
+function checkForMissileCollision(alien) {
+  if (missile && alien && alien.missile.checkCollision(missile)) {
+    alien.missile.destroy();
+    missile.hideMissile();
   }
 }
 

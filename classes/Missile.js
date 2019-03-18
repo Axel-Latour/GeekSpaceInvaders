@@ -30,12 +30,4 @@ class Missile extends Sprite {
     }
     return false;
   }
-
-  /**
-   * Remove the current missile from the DOM and stop its animation
-   */
-  destroy() {
-    this.stopAnimation();
-    this._node.remove();
-  }
 }

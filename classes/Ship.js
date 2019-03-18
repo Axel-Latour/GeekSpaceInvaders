@@ -13,6 +13,10 @@ class Ship extends Sprite {
     return super.moveRight(Ship.PIXEL_BY_SHIP_MOVE);
   }
 
+  /**
+   * When the ship is touched by an alien, fake the explosion by
+   * changing its image.
+   */
   explode() {
     this._node.src = this.generateFullImagePath("ship_exploded");
   }

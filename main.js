@@ -8,6 +8,7 @@ var isGameInitialzed = false;
 
 var totalNumberOfAliens = ALIENS_IMAGE_ORDER.length * ALIENS_PER_LINE;
 var numberOfAliensKilled = 0;
+var numberOfLives = 3;
 
 var backgroundSound = new Audio("assets/sounds/background-sound.mp3");
 var missileSound = new Audio("assets/sounds/shoot.wav");
@@ -15,6 +16,9 @@ var alienKilledSound = new Audio("assets/sounds/alien-killed.wav");
 var shipKilled = new Audio("assets/sounds/ship-killed.wav");
 var victorySound = new Audio();
 var defeatSound = new Audio();
+
+// true if the ship is exploding. It bocks the keydown event.
+var shipIsExploding = false;
 
 var ship;
 var aliens;
@@ -37,6 +41,7 @@ function initGame() {
   document.getElementById(START_CONTAINER_ID).style.display = "none";
   document.getElementById(GAME_CONTAINER_ID).style.display = "flex";
   updateScoreValue();
+  updateLivesValue();
   generateShip();
   generateAliens();
 }
@@ -45,6 +50,7 @@ function initGame() {
  * Generate the ship Sprite and place it in the middle of the bottom of the window
  */
 function generateShip() {
+  shipIsExploding = false;
   ship = new Ship("ship", 0, 0);
   ship.left =
     (document.getElementById(GAME_AREA_ID).clientWidth - Sprite.SPRITE_SIZE) /
@@ -69,10 +75,10 @@ function generateAliens() {
         i * Alien.SPACE_BETWEEN_ALIEN
       );
       aliens[i][j] = currentAlien;
-      // animateAlien(currentAlien, true);
+      animateAlien(currentAlien);
     }
   }
-  launchAlienMissile(aliens[0][6]);
+  // launchAlienMissile(aliens[0][6]);
 }
 
 /**
@@ -80,17 +86,14 @@ function generateAliens() {
  * If one of the alien can't make a move, beause it exists of the screen
  * (moveRight/moveLeft returns false in this case), the animation is reversed.
  * @param {*} alien alien sprite to animate
- * @param {*} animateToRight true if the animation should move the sprite to the right.
- * Otherwise, it will make the sprite move to the left
  */
-function animateAlien(alien, animateToRight) {
+function animateAlien(alien) {
   alien.startAnimation(Alien.MOVE_INTERVAL, () => {
     if (alien) {
-      if (animateToRight && !alien.moveRight()) {
-        reverseAnimation(animateToRight);
-      }
-      if (!animateToRight && !alien.moveLeft()) {
-        reverseAnimation(animateToRight);
+      if (alien.isMovingToTheRight && !alien.moveRight()) {
+        reverseAnimation();
+      } else if (!alien.isMovingToTheRight && !alien.moveLeft()) {
+        reverseAnimation();
       }
     }
   });
@@ -99,14 +102,14 @@ function animateAlien(alien, animateToRight) {
 /**
  * For each displayed alien, move them to the next line and animate them
  * in the opposite direction of the current animation
- * @param {*} animateToRight true if the animation is currently moving to the right
  */
-function reverseAnimation(animateToRight) {
+function reverseAnimation() {
   aliens.forEach(lineOfAliens =>
     lineOfAliens.forEach(alien => {
       if (alien) {
         alien.top += Alien.SPACE_BETWEEN_ALIEN;
-        animateAlien(alien, !animateToRight);
+        alien.isMovingToTheRight = !alien.isMovingToTheRight;
+        animateAlien(alien);
         checkIfAlienIsOnTheShip(alien);
       }
     })
@@ -182,7 +185,35 @@ function checkIfShipIsTouched(alien) {
     shipKilled.play();
     alien.missile.destroy();
     ship.explode();
+    shipIsExploding = true;
     stopAliensAnimation();
+    setTimeout(() => {
+      explodeShip();
+    }, 1000);
+  }
+}
+
+/**
+ * Triggered when the ship is touched by an alien missile.
+ * It destroys the ship to simulate its explosion and regenerate it.
+ * It removes one life and check if the player has lost his game.
+ * Finally, it restarts the alien animation
+ */
+function explodeShip() {
+  ship.destroy();
+  generateShip();
+  numberOfLives--;
+  updateLivesValue();
+  if (numberOfLives === 0) {
+    stopTheGameWithDefeat();
+  } else {
+    aliens.forEach(lineOfAliens =>
+      lineOfAliens.forEach(alien => {
+        if (alien) {
+          animateAlien(alien);
+        }
+      })
+    );
   }
 }
 
@@ -204,6 +235,10 @@ function updateScoreValue() {
   document.getElementById(
     SCORE_VALUE_ID
   ).innerHTML = `${numberOfAliensKilled} / ${totalNumberOfAliens}`;
+}
+
+function updateLivesValue() {
+  document.getElementById(LIVES_VALUE_ID).innerHTML = numberOfLives;
 }
 
 /**
@@ -256,7 +291,7 @@ function stopAliensAnimation() {
  * @param {*} e keyboard event
  */
 function onKeyDown(e) {
-  if (isGameInitialzed) {
+  if (isGameInitialzed && !shipIsExploding) {
     switch (e.keyCode) {
       //Space bar
       case 32:

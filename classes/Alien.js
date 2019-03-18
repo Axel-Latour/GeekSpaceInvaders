@@ -1,11 +1,12 @@
 class Alien extends Sprite {
   static PIXEL_BY_ALIEN_MOVE = 2;
-  static MOVE_INTERVAL = 100;
+  static MOVE_INTERVAL = 10;
   static SPACE_BETWEEN_ALIEN = 50;
 
   constructor(imageFile, left, top) {
     super(`${imageFile}_1`, left, top);
     this.initialImageFile = imageFile;
+    this.isMovingToTheRight = true;
   }
 
   get missile() {
@@ -73,7 +74,7 @@ class Alien extends Sprite {
     this.stopAnimation();
     this._node.src = this.generateFullImagePath(EXPLODED_ALIEN_IMG);
     setTimeout(() => {
-      this._node.remove();
+      this.destroy();
     }, Alien.MOVE_INTERVAL * 3);
   }
 }

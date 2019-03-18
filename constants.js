@@ -4,6 +4,7 @@ const GAME_CONTAINER_ID = "game-container";
 const VICTORY_CONTAINER_ID = "victory-message";
 const DEFEAT_CONTAINER_ID = "defeat-message";
 const SCORE_VALUE_ID = "score-value";
+const LIVES_VALUE_ID = "number-of-lives";
 
 const EXPLODED_ALIEN_IMG = "explosion";
 const MISSILE_IMG = "missile";

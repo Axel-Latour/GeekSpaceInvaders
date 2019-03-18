@@ -125,4 +125,12 @@ class Sprite {
       return true;
     }
   }
+
+  /**
+   * Remove the current Sprite from the DOM and stop its animation
+   */
+  destroy() {
+    this.stopAnimation();
+    this._node.remove();
+  }
 }

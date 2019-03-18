@@ -18,4 +18,15 @@ class Missile extends Sprite {
     }
     return false;
   }
+
+  moveDown() {
+    if (
+      this.top + Sprite.SPRITE_SIZE <
+      document.getElementById(GAME_AREA_ID).clientHeight
+    ) {
+      this.top += Missile.PIXEL_BY_MISSILE_MOVE;
+      return true;
+    }
+    return false;
+  }
 }

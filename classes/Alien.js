@@ -8,6 +8,14 @@ class Alien extends Sprite {
     this.initialImageFile = imageFile;
   }
 
+  get missile() {
+    return this._missile;
+  }
+
+  set missile(missile) {
+    this._missile = missile;
+  }
+
   /**
    * Move the alien to the left and update its image on each move.
    * @returns true if the move is done, false if it can't be done
@@ -52,9 +60,8 @@ class Alien extends Sprite {
   explode() {
     this.stopAnimation();
     this._node.src = this.generateFullImagePath(EXPLODED_ALIEN_IMG);
-    setTimeout(
-      () => (this._node.style.display = "none"),
-      Alien.MOVE_INTERVAL * 3
-    );
+    setTimeout(() => {
+      this._node.remove();
+    }, Alien.MOVE_INTERVAL * 3);
   }
 }

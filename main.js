@@ -1,5 +1,8 @@
-//TODO
-// Gérer les tirs ennemis et le nombre de vies restantes
+//TODO:
+// Factoriser la génération des missiles et rajouter l'aléatoire
+// Changer l'image lorsque le vaisseau est touché, avec effet de restart
+// Compteur de vies
+// Gestion des collisions entre les missiles ?
 
 var isGameInitialzed = false;
 
@@ -9,6 +12,7 @@ var numberOfAliensKilled = 0;
 var backgroundSound = new Audio("assets/sounds/background-sound.mp3");
 var missileSound = new Audio("assets/sounds/shoot.wav");
 var alienKilledSound = new Audio("assets/sounds/alien-killed.wav");
+var shipKilled = new Audio("assets/sounds/ship-killed.wav");
 var victorySound = new Audio();
 var defeatSound = new Audio();
 
@@ -16,6 +20,10 @@ var ship;
 var aliens;
 var missile;
 
+/**
+ * When the firt screen is loaded, add the event listener
+ * on the keydown for all the game
+ */
 function initFirstScreen() {
   document.addEventListener("keydown", onKeyDown);
 }
@@ -61,26 +69,27 @@ function generateAliens() {
         i * Alien.SPACE_BETWEEN_ALIEN
       );
       aliens[i][j] = currentAlien;
-      animateSprite(currentAlien, true);
+      animateAlien(currentAlien, true);
     }
   }
+  // launchAlienMissile(aliens[0][6]);
 }
 
 /**
- * Launch an animation on a given Sprite, to make it move to the left or to thr right
+ * Launch an animation on a given alien, to make it move to the left or to thr right
  * If one of the alien can't make a move, beause it exists of the screen
  * (moveRight/moveLeft returns false in this case), the animation is reversed.
- * @param {*} sprite sprite to animate
+ * @param {*} alien alien sprite to animate
  * @param {*} animateToRight true if the animation should move the sprite to the right.
  * Otherwise, it will make the sprite move to the left
  */
-function animateSprite(sprite, animateToRight) {
-  sprite.startAnimation(Alien.MOVE_INTERVAL, () => {
-    if (sprite.isDisplayed()) {
-      if (animateToRight && !sprite.moveRight()) {
+function animateAlien(alien, animateToRight) {
+  alien.startAnimation(Alien.MOVE_INTERVAL, () => {
+    if (alien) {
+      if (animateToRight && !alien.moveRight()) {
         reverseAnimation(animateToRight);
       }
-      if (!animateToRight && !sprite.moveLeft()) {
+      if (!animateToRight && !alien.moveLeft()) {
         reverseAnimation(animateToRight);
       }
     }
@@ -95,9 +104,9 @@ function animateSprite(sprite, animateToRight) {
 function reverseAnimation(animateToRight) {
   aliens.forEach(lineOfAliens =>
     lineOfAliens.forEach(alien => {
-      if (alien.isDisplayed()) {
+      if (alien) {
         alien.top += Alien.SPACE_BETWEEN_ALIEN;
-        animateSprite(alien, !animateToRight);
+        animateAlien(alien, !animateToRight);
         checkIfAlienIsOnTheShip(alien);
       }
     })
@@ -112,7 +121,7 @@ function reverseAnimation(animateToRight) {
  */
 function launchMissile() {
   if (!missile) {
-    missile = new Missile("ship_missile", 0, 0);
+    missile = new Missile(MISSILE_IMG, 0, 0);
     missile._node.style.display = "none";
   }
   if (!missile.isDisplayed()) {
@@ -130,18 +139,43 @@ function launchMissile() {
   }
 }
 
+function launchAlienMissile(alien) {
+  if (!alien.missile) {
+    alien.missile = new Missile(MISSILE_IMG, 0, 0);
+    alien.missile._node.style.display = "none";
+  }
+  if (!alien.missile.isDisplayed()) {
+    alien.missile._node.style.display = "block";
+    alien.missile.top = alien.top + Sprite.SPRITE_SIZE;
+    alien.missile.left =
+      alien.left + Sprite.SPRITE_SIZE / 2 - SHIP_MISSILE_WIDTH / 2;
+    alien.missile.startAnimation(Missile.MOVE_INTERVAL, () => {
+      if (!alien) {
+        alien.missile.stopAnimation();
+      } else {
+        if (!alien.missile.moveDown()) {
+          alien.missile._node.style.display = "none";
+        } else {
+          checkIfShipIsTouched(alien);
+        }
+      }
+    });
+  }
+}
+
 /**
  * Loop over all the displayed aliens to check if they're colliding
  * with the ship missile. If it is, hide the alien, the missile, update
  * the player score and check if the player won
  */
 function checkIfAlienIsTouched() {
-  aliens.forEach(lineOfAliens =>
-    lineOfAliens.forEach(alien => {
-      if (alien.isDisplayed()) {
+  aliens.forEach((lineOfAliens, currentLineIdx) =>
+    lineOfAliens.forEach((alien, currentAlienIdx) => {
+      if (alien) {
         if (missile.checkCollision(alien)) {
           alienKilledSound.play();
           alien.explode();
+          aliens[currentLineIdx][currentAlienIdx] = null;
           missile._node.style.display = "none";
           missile.stopAnimation();
           numberOfAliensKilled++;
@@ -151,6 +185,16 @@ function checkIfAlienIsTouched() {
       }
     })
   );
+}
+
+function checkIfShipIsTouched(alien) {
+  if (alien.missile.checkCollision(ship)) {
+    shipKilled.play();
+    alien.missile._node.style.display = "none";
+    alien.missile.stopAnimation();
+    ship.explode();
+    stopAliensAnimation();
+  }
 }
 
 /**
@@ -180,6 +224,9 @@ function updateScoreValue() {
  */
 function checkForVictory() {
   if (numberOfAliensKilled === totalNumberOfAliens) {
+    document.getElementById(
+      VICTORY_CONTAINER_ID
+    ).innerHTML = `CONGRATULATIONS ! YOU WIN THIS GAME ! THE CODE IS ${VICTORY_CODE}`;
     document.getElementById(VICTORY_CONTAINER_ID).style.display = "flex";
     stopTheGame();
     victorySound.play();
@@ -209,7 +256,7 @@ function stopTheGame() {
  */
 function stopAliensAnimation() {
   aliens.forEach(lineOfAliens =>
-    lineOfAliens.forEach(alien => alien.stopAnimation())
+    lineOfAliens.forEach(alien => alien && alien.stopAnimation())
   );
 }
 

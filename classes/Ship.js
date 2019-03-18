@@ -12,4 +12,8 @@ class Ship extends Sprite {
   moveRight() {
     return super.moveRight(Ship.PIXEL_BY_SHIP_MOVE);
   }
+
+  explode() {
+    this._node.src = this.generateFullImagePath("ship_exploded");
+  }
 }

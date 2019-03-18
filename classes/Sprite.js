@@ -27,13 +27,6 @@ class Sprite {
   }
 
   /**
-   * Check if a Sprite is displayed on the screen
-   */
-  isDisplayed() {
-    return this._node.style.display !== "none";
-  }
-
-  /**
    * Generate the Sprite as an img HTML tag and add it to the body
    */
   generateDomElement() {
@@ -111,7 +104,7 @@ class Sprite {
     if (
       this.left + this._node.width > other.left &&
       this.left < other.left + Sprite.SPRITE_SIZE &&
-      this.top > other.top &&
+      this.top + Sprite.SPRITE_SIZE > other.top &&
       this.top < other.top + Sprite.SPRITE_SIZE
     ) {
       return true;

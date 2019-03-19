@@ -11,8 +11,11 @@ var backgroundSound = new Audio("assets/sounds/background-sound.mp3");
 var missileSound = new Audio("assets/sounds/shoot.wav");
 var alienKilledSound = new Audio("assets/sounds/alien-killed.wav");
 var shipKilled = new Audio("assets/sounds/ship-killed.wav");
-var victorySound = new Audio();
-var defeatSound = new Audio();
+var victorySound = new Audio("assets/sounds/victory.mp3");
+var defeatSound = new Audio("assets/sounds/defeat.mp3");
+var endOfGameBackgroundSound = new Audio(
+  "assets/sounds/end-game-background.mp3"
+);
 
 // true if the ship is exploding. It bocks the keydown event.
 var shipIsExploding = false;
@@ -280,6 +283,8 @@ function stopTheGameWithDefeat() {
  */
 function stopTheGame() {
   backgroundSound.pause();
+  endOfGameBackgroundSound.loop = true;
+  endOfGameBackgroundSound.play();
   document.getElementById(GAME_CONTAINER_ID).style.display = "none";
   stopAliensAnimation();
 }

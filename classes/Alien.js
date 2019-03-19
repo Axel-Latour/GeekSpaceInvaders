@@ -1,6 +1,6 @@
 class Alien extends Sprite {
   static PIXEL_BY_ALIEN_MOVE = 2;
-  static MOVE_INTERVAL = 10;
+  static MOVE_INTERVAL = 100;
   static SPACE_BETWEEN_ALIEN = 50;
 
   constructor(imageFile, left, top) {
@@ -63,6 +63,11 @@ class Alien extends Sprite {
     missile.top = this.top + Sprite.SPRITE_SIZE;
     missile.left = this.left + Sprite.SPRITE_SIZE / 2 - MISSILE_WIDTH / 2;
     this.missile = missile;
+  }
+
+  destroyMissile() {
+    this.missile.destroy();
+    this.missile = null;
   }
 
   /**

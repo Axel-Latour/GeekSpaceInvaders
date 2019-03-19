@@ -75,10 +75,9 @@ function generateAliens() {
         i * Alien.SPACE_BETWEEN_ALIEN
       );
       aliens[i][j] = currentAlien;
-      animateAlien(currentAlien);
+      animateAlien(currentAlien, i, j);
     }
   }
-  // launchAlienMissile(aliens[0][6]);
 }
 
 /**
@@ -86,10 +85,13 @@ function generateAliens() {
  * If one of the alien can't make a move, beause it exists of the screen
  * (moveRight/moveLeft returns false in this case), the animation is reversed.
  * @param {*} alien alien sprite to animate
+ * @param {*} alienLine index of the alien line
+ * @param {*} alienColumn index of the alien column
  */
-function animateAlien(alien) {
+function animateAlien(alien, alienLine, alienColumn) {
   alien.startAnimation(Alien.MOVE_INTERVAL, () => {
     if (alien) {
+      randomlyShoot(alien, alienLine, alienColumn);
       if (alien.isMovingToTheRight && !alien.moveRight()) {
         reverseAnimation();
       } else if (!alien.isMovingToTheRight && !alien.moveLeft()) {
@@ -104,12 +106,12 @@ function animateAlien(alien) {
  * in the opposite direction of the current animation
  */
 function reverseAnimation() {
-  aliens.forEach(lineOfAliens =>
-    lineOfAliens.forEach(alien => {
+  aliens.forEach((lineOfAliens, alienLineIdx) =>
+    lineOfAliens.forEach((alien, alienColumnIdx) => {
       if (alien) {
         alien.top += Alien.SPACE_BETWEEN_ALIEN;
         alien.isMovingToTheRight = !alien.isMovingToTheRight;
-        animateAlien(alien);
+        animateAlien(alien, alienLineIdx, alienColumnIdx);
         checkIfAlienIsOnTheShip(alien);
       }
     })
@@ -141,16 +143,46 @@ function launchMissile() {
   }
 }
 
+/**
+ * Make the given alien launch a missile, and animate this missile.
+ * Check if the missile has touchd the ship or the ship missile
+ * @param {*} alien alien that's launching the missile
+ */
 function launchAlienMissile(alien) {
   alien.launchMissile();
   alien.missile.startAnimation(Missile.MOVE_INTERVAL, () => {
     if (!alien.missile.moveDown()) {
-      alien.missile.destroy();
+      alien.destroyMissile();
     } else {
       checkForMissileCollision(alien);
       checkIfShipIsTouched(alien);
     }
   });
+}
+
+/**
+ * Calculate if the given alien is the last alien on its column.
+ * If it is, it has a chance to launch a missile, based on the rate
+ * @param {*} alien alien trying to launch a missile
+ * @param {*} alienLine alien line position
+ * @param {*} alienColumn alien column position
+ */
+function randomlyShoot(alien, alienLine, alienColumn) {
+  if (alien && !alien.missile) {
+    let random = Math.random();
+    // Check if there's an invader under the given alien, only if the alien line is not the last one
+    if (alienLine !== ALIENS_IMAGE_ORDER.length) {
+      for (var i = alienLine + 1; i < ALIENS_IMAGE_ORDER.length; i++) {
+        if (aliens[i][alienColumn]) {
+          // Break the method, don't send any missile
+          return;
+        }
+      }
+    }
+    if (random > ALIEN_SHOOT_RATE) {
+      launchAlienMissile(alien);
+    }
+  }
 }
 
 /**
@@ -200,7 +232,7 @@ function checkIfShipIsTouched(alien) {
  */
 function checkForMissileCollision(alien) {
   if (missile && alien && alien.missile.checkCollision(missile)) {
-    alien.missile.destroy();
+    alien.destroyMissile();
     missile.hideMissile();
   }
 }
@@ -219,10 +251,10 @@ function explodeShip() {
   if (numberOfLives === 0) {
     stopTheGameWithDefeat();
   } else {
-    aliens.forEach(lineOfAliens =>
-      lineOfAliens.forEach(alien => {
+    aliens.forEach((lineOfAliens, alienLineIdx) =>
+      lineOfAliens.forEach((alien, alienColumnIdx) => {
         if (alien) {
-          animateAlien(alien);
+          animateAlien(alien, alienLineIdx, alienColumnIdx);
         }
       })
     );

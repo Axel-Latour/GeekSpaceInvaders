@@ -1,7 +1,4 @@
 class Missile extends Sprite {
-  static PIXEL_BY_MISSILE_MOVE = 2;
-  static MOVE_INTERVAL = 2;
-
   constructor(imageFile, left, top) {
     super(imageFile, left, top);
     this._node.style.display = "none";
@@ -13,8 +10,8 @@ class Missile extends Sprite {
    * @returns true if the move is done, false if it can't be done
    */
   moveTop() {
-    if (this.top > -Sprite.SPRITE_SIZE) {
-      this.top -= Missile.PIXEL_BY_MISSILE_MOVE;
+    if (this.top > -SPRITE_SIZE) {
+      this.top -= PIXEL_BY_MISSILE_MOVE;
       return true;
     }
     return false;
@@ -22,10 +19,10 @@ class Missile extends Sprite {
 
   moveDown() {
     if (
-      this.top + Sprite.SPRITE_SIZE <
+      this.top + SPRITE_SIZE <
       document.getElementById(GAME_AREA_ID).clientHeight
     ) {
-      this.top += Missile.PIXEL_BY_MISSILE_MOVE;
+      this.top += PIXEL_BY_MISSILE_MOVE;
       return true;
     }
     return false;

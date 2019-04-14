@@ -71,8 +71,8 @@ function generateAliens() {
     for (var j = 0; j < ALIENS_PER_LINE; j++) {
       currentAlien = new Alien(
         `alien_${ALIENS_IMAGE_ORDER[i]}`,
-        j * Alien.SPACE_BETWEEN_ALIEN,
-        i * Alien.SPACE_BETWEEN_ALIEN
+        j * SPACE_BETWEEN_ALIEN,
+        i * SPACE_BETWEEN_ALIEN
       );
       aliens[i][j] = currentAlien;
       animateAlien(currentAlien, i, j);
@@ -89,7 +89,7 @@ function generateAliens() {
  * @param {*} alienColumn index of the alien column
  */
 function animateAlien(alien, alienLine, alienColumn) {
-  alien.startAnimation(Alien.MOVE_INTERVAL, () => {
+  alien.startAnimation(ALIEN_MOVE_INTERVAL, () => {
     if (alien) {
       randomlyShoot(alien, alienLine, alienColumn);
       if (alien.isMovingToTheRight && !alien.moveRight()) {
@@ -109,7 +109,7 @@ function reverseAnimation() {
   aliens.forEach((lineOfAliens, alienLineIdx) =>
     lineOfAliens.forEach((alien, alienColumnIdx) => {
       if (alien) {
-        alien.top += Alien.SPACE_BETWEEN_ALIEN;
+        alien.top += SPACE_BETWEEN_ALIEN;
         alien.isMovingToTheRight = !alien.isMovingToTheRight;
         animateAlien(alien, alienLineIdx, alienColumnIdx);
         checkIfAlienIsOnTheShip(alien);
@@ -133,7 +133,7 @@ function launchMissile() {
     missile._node.style.display = "block";
     missile.top = ship.top - Sprite.SPRITE_SIZE;
     missile.left = ship.left + Sprite.SPRITE_SIZE / 2 - MISSILE_WIDTH / 2;
-    missile.startAnimation(Missile.MOVE_INTERVAL, () => {
+    missile.startAnimation(MISSILE_MOVE_INTERVAL, () => {
       if (!missile.moveTop()) {
         missile.hideMissile();
       } else {
@@ -150,7 +150,7 @@ function launchMissile() {
  */
 function launchAlienMissile(alien) {
   alien.launchMissile();
-  alien.missile.startAnimation(Missile.MOVE_INTERVAL, () => {
+  alien.missile.startAnimation(MISSILE_MOVE_INTERVAL, () => {
     if (!alien.missile.moveDown()) {
       alien.destroyMissile();
     } else {
@@ -213,7 +213,7 @@ function checkIfAlienIsTouched() {
  * @param {*} alien: alien that shoots the missile
  */
 function checkIfShipIsTouched(alien) {
-  if (alien.missile.checkCollision(ship)) {
+  if (alien && alien.missile && alien.missile.checkCollision(ship)) {
     shipKilled.play();
     alien.missile.destroy();
     ship.explode();

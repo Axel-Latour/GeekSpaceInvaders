@@ -13,6 +13,17 @@ const ALIENS_PER_LINE = 11;
 const ALIENS_IMAGE_ORDER = ["1", "2", "2", "3", "3"];
 const MISSILE_WIDTH = 7;
 
+const SPRITE_SIZE = 34;
+
+const PIXEL_BY_ALIEN_MOVE = 2;
+const ALIEN_MOVE_INTERVAL = 100;
+const SPACE_BETWEEN_ALIEN = 50;
+
+const PIXEL_BY_MISSILE_MOVE = 2;
+const MISSILE_MOVE_INTERVAL = 2;
+
+const PIXEL_BY_SHIP_MOVE = 5;
+
 const ALIEN_SHOOT_RATE = 0.995;
 
 const VICTORY_CODE = 1234;

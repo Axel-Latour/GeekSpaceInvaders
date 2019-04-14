@@ -1,8 +1,4 @@
 class Alien extends Sprite {
-  static PIXEL_BY_ALIEN_MOVE = 2;
-  static MOVE_INTERVAL = 100;
-  static SPACE_BETWEEN_ALIEN = 50;
-
   constructor(imageFile, left, top) {
     super(`${imageFile}_1`, left, top);
     this.initialImageFile = imageFile;
@@ -23,7 +19,7 @@ class Alien extends Sprite {
    */
   moveLeft() {
     this.updateImage();
-    if (!super.moveLeft(Alien.PIXEL_BY_ALIEN_MOVE)) {
+    if (!super.moveLeft(PIXEL_BY_ALIEN_MOVE)) {
       return false;
     }
     return true;
@@ -35,7 +31,7 @@ class Alien extends Sprite {
    */
   moveRight() {
     this.updateImage();
-    if (!super.moveRight(Alien.PIXEL_BY_ALIEN_MOVE)) {
+    if (!super.moveRight(PIXEL_BY_ALIEN_MOVE)) {
       return false;
     }
     return true;
@@ -60,8 +56,8 @@ class Alien extends Sprite {
   launchMissile() {
     const missile = new Missile(MISSILE_IMG, 0, 0);
     missile._node.style.display = "block";
-    missile.top = this.top + Sprite.SPRITE_SIZE;
-    missile.left = this.left + Sprite.SPRITE_SIZE / 2 - MISSILE_WIDTH / 2;
+    missile.top = this.top + SPRITE_SIZE;
+    missile.left = this.left + SPRITE_SIZE / 2 - MISSILE_WIDTH / 2;
     this.missile = missile;
   }
 
@@ -80,6 +76,6 @@ class Alien extends Sprite {
     this._node.src = this.generateFullImagePath(EXPLODED_ALIEN_IMG);
     setTimeout(() => {
       this.destroy();
-    }, Alien.MOVE_INTERVAL * 3);
+    }, ALIEN_MOVE_INTERVAL * 3);
   }
 }

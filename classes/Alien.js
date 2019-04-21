@@ -62,8 +62,10 @@ class Alien extends Sprite {
   }
 
   destroyMissile() {
-    this.missile.destroy();
-    this.missile = null;
+    if (this.missile) {
+      this.missile.destroy();
+      this.missile = null;
+    }
   }
 
   /**

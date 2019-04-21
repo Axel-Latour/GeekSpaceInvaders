@@ -88,8 +88,6 @@ function generateAliens() {
   animateMissiles();
 }
 
-function startGameAnimations() {}
-
 /**
  * Launch an animation on envery alien, to make them move to the left or to the right.
  * If one of the alien can't make a move, because it goes outside of the screen

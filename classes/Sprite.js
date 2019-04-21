@@ -26,14 +26,6 @@ class Sprite {
     this._node.style.top = `${value}px`;
   }
 
-  getWidth() {
-    return this._node.clientWidth;
-  }
-
-  getHeight() {
-    return this._node.clientHeight;
-  }
-
   /**
    * Check if a Sprite is displayed on the screen
    */

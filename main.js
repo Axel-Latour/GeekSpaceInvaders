@@ -38,15 +38,18 @@ function initFirstScreen() {
  * Initialize the game by placing all the Sprites
  */
 function initGame() {
-  // Generate gloal variable to calculate client width and height only once
-  window.FULL_PAGE_WIDTH = document.body.clientWidth;
-  window.FULL_PAGE_HEIGHT = document.body.clientHeight;
-  backgroundSound.loop = true;
-  backgroundSound.play();
+  // Display the game area
   document.getElementById(START_CONTAINER_ID).style.display = "none";
   document.getElementById(GAME_CONTAINER_ID).style.display = "flex";
+  // Generate global variable to calculate client width and height only once
+  window.FULL_PAGE_WIDTH = document.body.clientWidth;
+  window.FULL_PAGE_HEIGHT = document.body.clientHeight;
   window.GAME_AREA_WIDTH = document.getElementById(GAME_AREA_ID).clientWidth;
   window.GAME_AREA_HEIGHT = document.getElementById(GAME_AREA_ID).clientHeight;
+  // Play infinite sound
+  backgroundSound.loop = true;
+  backgroundSound.play();
+  // Display all necessary elements to start a party
   updateScoreValue();
   updateLivesValue();
   generateShip();

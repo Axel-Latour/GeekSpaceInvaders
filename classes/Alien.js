@@ -73,6 +73,7 @@ class Alien extends Sprite {
    */
   explode() {
     this.stopAnimation();
+    this.destroyMissile();
     this._node.src = this.generateFullImagePath(EXPLODED_ALIEN_IMG);
     setTimeout(() => {
       this.destroy();

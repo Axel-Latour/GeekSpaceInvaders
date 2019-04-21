@@ -2,7 +2,7 @@ var isGameInitialzed = false;
 
 var totalNumberOfAliens = ALIENS_IMAGE_ORDER.length * ALIENS_PER_LINE;
 var numberOfAliensKilled = 0;
-var numberOfLives = 3;
+var numberOfLives = INITIAL_NUMBER_OF_LIVES;
 
 var backgroundSound = new Audio("assets/sounds/background-sound.mp3");
 var missileSound = new Audio("assets/sounds/shoot.wav");
@@ -22,6 +22,7 @@ var aliens;
 var missile;
 
 var alienAnimationTimer;
+var missileAnimationTimer;
 
 /**
  * When the firt screen is loaded, add the event listener
@@ -77,7 +78,10 @@ function generateAliens() {
     }
   }
   animateEveryAliens();
+  animateMissiles();
 }
+
+function startGameAnimations() {}
 
 /**
  * Launch an animation on envery alien, to make them move to the left or to the right.
@@ -88,11 +92,13 @@ function animateEveryAliens() {
   alienAnimationTimer = setInterval(() => {
     aliens.forEach((lineOfAliens, alienLineIdx) =>
       lineOfAliens.forEach((alien, alienColumnIdx) => {
-        randomlyShoot(alien, alienLineIdx, alienColumnIdx);
-        if (alien.isMovingToTheRight && !alien.moveRight()) {
-          reverseAnimation();
-        } else if (!alien.isMovingToTheRight && !alien.moveLeft()) {
-          reverseAnimation();
+        if (alien) {
+          randomlyShoot(alien, alienLineIdx, alienColumnIdx);
+          if (alien.isMovingToTheRight && !alien.moveRight()) {
+            reverseAnimation();
+          } else if (!alien.isMovingToTheRight && !alien.moveLeft()) {
+            reverseAnimation();
+          }
         }
       })
     );
@@ -104,8 +110,8 @@ function animateEveryAliens() {
  * in the opposite direction of the current animation
  */
 function reverseAnimation() {
-  aliens.forEach((lineOfAliens, alienLineIdx) =>
-    lineOfAliens.forEach((alien, alienColumnIdx) => {
+  aliens.forEach(lineOfAliens =>
+    lineOfAliens.forEach(alien => {
       if (alien) {
         alien.top += SPACE_BETWEEN_ALIEN;
         alien.isMovingToTheRight = !alien.isMovingToTheRight;
@@ -130,31 +136,37 @@ function launchMissile() {
     missile._node.style.display = "block";
     missile.top = ship.top - Sprite.SPRITE_SIZE;
     missile.left = ship.left + Sprite.SPRITE_SIZE / 2 - MISSILE_WIDTH / 2;
-    missile.startAnimation(MISSILE_MOVE_INTERVAL, () => {
+  }
+}
+
+/**
+ * Generate an interval, to check on every alien if a missile must be
+ * animated, and also the ship missile.
+ * For the alien ones, check for the missile move and the ship explosion.
+ * For the ship one, check for its move and if an alien is touched.
+ */
+function animateMissiles() {
+  missileAnimationTimer = setInterval(() => {
+    aliens.forEach(lineOfAliens =>
+      lineOfAliens.forEach(alien => {
+        if (alien && alien.missile) {
+          if (!alien.missile.moveDown()) {
+            alien.destroyMissile();
+          } else {
+            checkForMissileCollision(alien);
+            checkIfShipIsTouched(alien);
+          }
+        }
+      })
+    );
+    if (missile && missile.isDisplayed()) {
       if (!missile.moveTop()) {
         missile.hideMissile();
       } else {
         checkIfAlienIsTouched();
       }
-    });
-  }
-}
-
-/**
- * Make the given alien launch a missile, and animate this missile.
- * Check if the missile has touchd the ship or the ship missile
- * @param {*} alien alien that's launching the missile
- */
-function launchAlienMissile(alien) {
-  alien.launchMissile();
-  alien.missile.startAnimation(MISSILE_MOVE_INTERVAL, () => {
-    if (!alien.missile.moveDown()) {
-      alien.destroyMissile();
-    } else {
-      checkForMissileCollision(alien);
-      checkIfShipIsTouched(alien);
     }
-  });
+  }, MISSILE_MOVE_INTERVAL);
 }
 
 /**
@@ -166,7 +178,6 @@ function launchAlienMissile(alien) {
  */
 function randomlyShoot(alien, alienLine, alienColumn) {
   if (alien && !alien.missile) {
-    let random = Math.random();
     // Check if there's an invader under the given alien, only if the alien line is not the last one
     if (alienLine !== ALIENS_IMAGE_ORDER.length) {
       for (var i = alienLine + 1; i < ALIENS_IMAGE_ORDER.length; i++) {
@@ -176,8 +187,8 @@ function randomlyShoot(alien, alienLine, alienColumn) {
         }
       }
     }
-    if (random > ALIEN_SHOOT_RATE) {
-      launchAlienMissile(alien);
+    if (Math.random() > ALIEN_SHOOT_RATE) {
+      alien.launchMissile();
     }
   }
 }
@@ -212,7 +223,7 @@ function checkIfAlienIsTouched() {
 function checkIfShipIsTouched(alien) {
   if (alien && alien.missile && alien.missile.checkCollision(ship)) {
     shipKilled.play();
-    alien.missile.destroy();
+    alien.destroyMissile();
     ship.explode();
     shipIsExploding = true;
     stopAliensAnimation();
@@ -228,7 +239,12 @@ function checkIfShipIsTouched(alien) {
  * @param {*} alien alien shooting the missile
  */
 function checkForMissileCollision(alien) {
-  if (missile && alien && alien.missile.checkCollision(missile)) {
+  if (
+    missile &&
+    missile.isDisplayed() &&
+    alien &&
+    alien.missile.checkCollision(missile)
+  ) {
     alien.destroyMissile();
     missile.hideMissile();
   }
@@ -310,6 +326,9 @@ function stopTheGame() {
   endOfGameBackgroundSound.play();
   document.getElementById(GAME_CONTAINER_ID).style.display = "none";
   stopAliensAnimation();
+  if (missileAnimationTimer) {
+    clearInterval(missileAnimationTimer);
+  }
 }
 
 /**

@@ -9,6 +9,8 @@ const LIVES_VALUE_ID = "number-of-lives";
 const EXPLODED_ALIEN_IMG = "explosion";
 const MISSILE_IMG = "missile";
 
+const INITIAL_NUMBER_OF_LIVES = 3;
+
 const ALIENS_PER_LINE = 11;
 const ALIENS_IMAGE_ORDER = ["1", "2", "2", "3", "3"];
 const MISSILE_WIDTH = 7;
@@ -19,8 +21,8 @@ const PIXEL_BY_ALIEN_MOVE = 2;
 const ALIEN_MOVE_INTERVAL = 70;
 const SPACE_BETWEEN_ALIEN = 50;
 
-const PIXEL_BY_MISSILE_MOVE = 2;
-const MISSILE_MOVE_INTERVAL = 2;
+const PIXEL_BY_MISSILE_MOVE = 4;
+const MISSILE_MOVE_INTERVAL = 20;
 
 const PIXEL_BY_SHIP_MOVE = 5;
 

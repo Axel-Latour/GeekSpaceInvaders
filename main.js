@@ -1,3 +1,5 @@
+//TODO : gérer un tableau de missile pour éviter de le faire disparaitre quand l'alien meurt ?
+
 var isGameInitialzed = false;
 
 var totalNumberOfAliens = ALIENS_IMAGE_ORDER.length * ALIENS_PER_LINE;
@@ -140,33 +142,48 @@ function launchMissile() {
 }
 
 /**
- * Generate an interval, to check on every alien if a missile must be
- * animated, and also the ship missile.
- * For the alien ones, check for the missile move and the ship explosion.
- * For the ship one, check for its move and if an alien is touched.
+ * On each time interval, move the ship and the alien missiles
  */
 function animateMissiles() {
   missileAnimationTimer = setInterval(() => {
-    aliens.forEach(lineOfAliens =>
-      lineOfAliens.forEach(alien => {
-        if (alien && alien.missile) {
-          if (!alien.missile.moveDown()) {
-            alien.destroyMissile();
-          } else {
-            checkForMissileCollision(alien);
-            checkIfShipIsTouched(alien);
-          }
-        }
-      })
-    );
-    if (missile && missile.isDisplayed()) {
-      if (!missile.moveTop()) {
-        missile.hideMissile();
-      } else {
-        checkIfAlienIsTouched();
-      }
-    }
+    moveAliensMissile();
+    moveShipMissile();
   }, MISSILE_MOVE_INTERVAL);
+}
+
+/**
+ * If a ship missile is currently displayed on the screen,
+ * make it move. If it's over the screen, hide it.
+ * Otherwise, it checks if an alien is touched.
+ */
+function moveShipMissile() {
+  if (missile && missile.isDisplayed()) {
+    if (!missile.moveTop()) {
+      missile.hideMissile();
+    } else {
+      checkIfAlienIsTouched();
+    }
+  }
+}
+
+/**
+ * Check on every alien if they have a missile being launched.
+ * If it is, try to make it move. If it's outside of the screen, destroy it.
+ * Otherwise, check if it's in collision with another missile or with the ship
+ */
+function moveAliensMissile() {
+  aliens.forEach(lineOfAliens =>
+    lineOfAliens.forEach(alien => {
+      if (alien && alien.missile) {
+        if (!alien.missile.moveDown()) {
+          alien.destroyMissile();
+        } else {
+          checkForMissileCollision(alien);
+          checkIfShipIsTouched(alien);
+        }
+      }
+    })
+  );
 }
 
 /**

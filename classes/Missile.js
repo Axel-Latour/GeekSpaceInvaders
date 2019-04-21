@@ -29,11 +29,10 @@ class Missile extends Sprite {
   }
 
   /**
-   * Hide the given missile and stop its animation.
+   * Hide the given missile.
    * It's used when the ship is launching a missile.
    */
   hideMissile() {
     this._node.style.display = "none";
-    this.stopAnimation();
   }
 }

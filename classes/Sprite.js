@@ -87,26 +87,6 @@ class Sprite {
   }
 
   /**
-   * Launch an animation using a timer with interval.
-   * Firstly stop the existing animation.
-   * @param {*} interval timer interval
-   * @param {*} callback method that must be called for each interval
-   */
-  startAnimation(interval, callback) {
-    this.stopAnimation();
-    this._timer = setInterval(() => callback(), interval);
-  }
-
-  /**
-   * Stop the animation of the Sprite if there's an existing one
-   */
-  stopAnimation() {
-    if (this._timer) {
-      clearInterval(this._timer);
-    }
-  }
-
-  /**
    * Check if the current Sprite is in collision with the given Sprite.
    * It uses the top and left properties to define if the Sprites are in collision.
    * @param {*} other Sprite to check for collision
@@ -127,7 +107,6 @@ class Sprite {
    * Remove the current Sprite from the DOM and stop its animation
    */
   destroy() {
-    this.stopAnimation();
     this._node.remove();
   }
 }

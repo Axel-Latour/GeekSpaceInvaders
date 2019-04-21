@@ -79,7 +79,7 @@ class Sprite {
    * @returns true if the move is done, false if it can't be done
    */
   moveRight(valueToAdd) {
-    if (this.left + valueToAdd < document.body.clientWidth - SPRITE_SIZE) {
+    if (this.left + valueToAdd < FULL_PAGE_WIDTH - SPRITE_SIZE) {
       this.left += valueToAdd;
       return true;
     }

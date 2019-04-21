@@ -18,10 +18,7 @@ class Missile extends Sprite {
   }
 
   moveDown() {
-    if (
-      this.top + SPRITE_SIZE <
-      document.getElementById(GAME_AREA_ID).clientHeight
-    ) {
+    if (this.top + SPRITE_SIZE < GAME_AREA_HEIGHT) {
       this.top += PIXEL_BY_MISSILE_MOVE;
       return true;
     }

@@ -38,10 +38,15 @@ function initFirstScreen() {
  * Initialize the game by placing all the Sprites
  */
 function initGame() {
+  // Generate gloal variable to calculate client width and height only once
+  window.FULL_PAGE_WIDTH = document.body.clientWidth;
+  window.FULL_PAGE_HEIGHT = document.body.clientHeight;
   backgroundSound.loop = true;
   backgroundSound.play();
   document.getElementById(START_CONTAINER_ID).style.display = "none";
   document.getElementById(GAME_CONTAINER_ID).style.display = "flex";
+  window.GAME_AREA_WIDTH = document.getElementById(GAME_AREA_ID).clientWidth;
+  window.GAME_AREA_HEIGHT = document.getElementById(GAME_AREA_ID).clientHeight;
   updateScoreValue();
   updateLivesValue();
   generateShip();
@@ -54,11 +59,8 @@ function initGame() {
 function generateShip() {
   shipIsExploding = false;
   ship = new Ship("ship", 0, 0);
-  ship.left =
-    (document.getElementById(GAME_AREA_ID).clientWidth - Sprite.SPRITE_SIZE) /
-    2;
-  ship.top =
-    document.getElementById(GAME_AREA_ID).clientHeight - Sprite.SPRITE_SIZE;
+  ship.left = (GAME_AREA_WIDTH - Sprite.SPRITE_SIZE) / 2;
+  ship.top = GAME_AREA_HEIGHT - Sprite.SPRITE_SIZE;
 }
 
 /**

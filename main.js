@@ -1,6 +1,3 @@
-//TODO:
-// Factoriser la génération des missiles et rajouter l'aléatoire
-
 var isGameInitialzed = false;
 
 var totalNumberOfAliens = ALIENS_IMAGE_ORDER.length * ALIENS_PER_LINE;
@@ -23,6 +20,8 @@ var shipIsExploding = false;
 var ship;
 var aliens;
 var missile;
+
+var alienAnimationTimer;
 
 /**
  * When the firt screen is loaded, add the event listener
@@ -75,30 +74,29 @@ function generateAliens() {
         i * SPACE_BETWEEN_ALIEN
       );
       aliens[i][j] = currentAlien;
-      animateAlien(currentAlien, i, j);
     }
   }
+  animateEveryAliens();
 }
 
 /**
- * Launch an animation on a given alien, to make it move to the left or to thr right
- * If one of the alien can't make a move, beause it exists of the screen
+ * Launch an animation on envery alien, to make them move to the left or to the right.
+ * If one of the alien can't make a move, because it goes outside of the screen
  * (moveRight/moveLeft returns false in this case), the animation is reversed.
- * @param {*} alien alien sprite to animate
- * @param {*} alienLine index of the alien line
- * @param {*} alienColumn index of the alien column
- */
-function animateAlien(alien, alienLine, alienColumn) {
-  alien.startAnimation(ALIEN_MOVE_INTERVAL, () => {
-    if (alien) {
-      randomlyShoot(alien, alienLine, alienColumn);
-      if (alien.isMovingToTheRight && !alien.moveRight()) {
-        reverseAnimation();
-      } else if (!alien.isMovingToTheRight && !alien.moveLeft()) {
-        reverseAnimation();
-      }
-    }
-  });
+ **/
+function animateEveryAliens() {
+  alienAnimationTimer = setInterval(() => {
+    aliens.forEach((lineOfAliens, alienLineIdx) =>
+      lineOfAliens.forEach((alien, alienColumnIdx) => {
+        randomlyShoot(alien, alienLineIdx, alienColumnIdx);
+        if (alien.isMovingToTheRight && !alien.moveRight()) {
+          reverseAnimation();
+        } else if (!alien.isMovingToTheRight && !alien.moveLeft()) {
+          reverseAnimation();
+        }
+      })
+    );
+  }, ALIEN_MOVE_INTERVAL);
 }
 
 /**
@@ -111,7 +109,6 @@ function reverseAnimation() {
       if (alien) {
         alien.top += SPACE_BETWEEN_ALIEN;
         alien.isMovingToTheRight = !alien.isMovingToTheRight;
-        animateAlien(alien, alienLineIdx, alienColumnIdx);
         checkIfAlienIsOnTheShip(alien);
       }
     })
@@ -251,13 +248,7 @@ function explodeShip() {
   if (numberOfLives === 0) {
     stopTheGameWithDefeat();
   } else {
-    aliens.forEach((lineOfAliens, alienLineIdx) =>
-      lineOfAliens.forEach((alien, alienColumnIdx) => {
-        if (alien) {
-          animateAlien(alien, alienLineIdx, alienColumnIdx);
-        }
-      })
-    );
+    animateEveryAliens();
   }
 }
 
@@ -325,9 +316,9 @@ function stopTheGame() {
  * Stop the animation of every aliens
  */
 function stopAliensAnimation() {
-  aliens.forEach(lineOfAliens =>
-    lineOfAliens.forEach(alien => alien && alien.stopAnimation())
-  );
+  if (alienAnimationTimer) {
+    clearInterval(alienAnimationTimer);
+  }
 }
 
 /**
